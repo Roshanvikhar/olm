@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: announcement
+  name: announcement
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: announcement
+  template:
+    metadata:
+      labels:
+        app: announcement
+    spec:
+      containers:
+      - name: announcement
+        image: dockerImage:imageTag
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: "5m"
+          limits:
+            memory: "200Mi"
+            cpu: "100m"
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "uat"
+        ports:
+        - containerPort: 80
+          name: announcement
+        volumeMounts:
+        - name: ca-pemstore
+          mountPath: /etc/ssl/certs/rds-combined-ca-bundle.pem
+          subPath: rds-combined-ca-bundle.pem
+      volumes:
+      - name: ca-pemstore
+        configMap:
+          name: ca-pemstore
+

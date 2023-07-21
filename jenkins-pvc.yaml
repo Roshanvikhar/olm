@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: new-jenkins
+  namespace: default
+  labels:
+    app.kubernetes.io/component: jenkins-controller
+    app.kubernetes.io/instance: myjenkins
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jenkins
+    helm.sh/chart: jenkins-4.4.0
+  annotations:
+    meta.helm.sh/release-name: myjenkins
+    meta.helm.sh/release-namespace: default
+    volume.beta.kubernetes.io/storage-provisioner: ebs.csi.aws.com
+    volume.kubernetes.io/selected-node: ip-172-31-47-201.ap-south-1.compute.internal
+    volume.kubernetes.io/storage-provisioner: ebs.csi.aws.com
+spec:
+  storageClassName: ebs-csi-sc
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi

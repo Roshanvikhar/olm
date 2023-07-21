@@ -1,0 +1,66 @@
+kubectl exec --namespace default -it svc/myjenkins -c jenkins -- /bin/cat /run/secrets/chart-admin-password && echo
+
+
+Defaulted container "jenkins" out of: jenkins, config-reload, init (init)
+
+kubectl patch pv jenkins-pv -p '{"metadata":{"labels":{"app.kubernetes.io/component":"jenkins-controller","app.kubernetes.io/instance":"myjenkins","app.kubernetes.io/managed-by":"Helm","app.kubernetes.io/name":"jenkins","helm.sh/chart":"jenkins-4.4.0"}}}'
+
+
+helm upgrade --install jenkins myjenkins -f values.yaml
+
+helm upgrade --install jenkins jenkins/jenkins -f values.yaml
+
+
+kubectl get events -n default --field-selector involvedObject.name=myjenkins-0
+
+kubectl exec --namespace default -it svc/myjenkins -c jenkins -- /bin/cat /run/secrets/chart-admin-password && echo
+
+kubectl describe secret myjenkins --namespace default
+
+kubectl describe secret myjenkins --namespace default | grep "jenkins-admin-password" | awk '{print $2}' | base64 --decode
+
+kubectl get secret myjenkins -jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode
+
+aws eks update-kubeconfig --name Demo-Cluster --region ap-south-1
+
+kubectl config set-context Demo-Cluster-context --cluster=Demo-Cluster
+
+
+admin
+vaqKGgDpHSv8whnw8tNGVc
+
+
+
+C:\ProgramData\chocolatey\lib\eksctl\tools
+
+
+
+aws iam create-open-id-connect-provider --url https://oidc.eks.ap-south-1.amazonaws.com/id/69F37B5270A7CC9A335D535CE2A58F90 --thumbprint-list ca-thumbprint --client-id-list sts.amazonaws.com --region ap-south-1
+
+
+aws eks describe-cluster --name Demo-Cluster --query "cluster.identity.oidc.issuer" --region ap-south-1 --output text
+
+
+aws eks update-kubeconfig --region ap-south-1  --name Demo-Cluster
+
+https://oidc.eks.ap-south-1.amazonaws.com/id/69F37B5270A7CC9A335D535CE2A58F90
+
+
+aws eks describe-cluster --name <cluster-name> --query "cluster.identity.oidc.issuer" --region <region-name> --output text
+
+
+openssl s_client -showcerts -connect https://oidc.eks.ap-south-1.amazonaws.com/id/69F37B5270A7CC9A335D535CE2A58F90:443 </dev/null 2>/dev/null | openssl x509 -outform PEM > oidc-cert.pem
+
+openssl s_client -showcerts -connect https://oidc.eks.ap-south-1.amazonaws.com/id/69F37B5270A7CC9A335D535CE2A58F90:443 | openssl x509 -outform PEM > oidc-cert.pem
+
+
+Invoke-Expression "openssl s_client -showcerts -connect oidc.eks.us-west-2.amazonaws.com:443 </dev/null 2>/dev/null | openssl x509 -outform PEM > oidc-cert.pem"
+
+curl -o oidc-cert.pem https://oidc.eks.ap-south-1.amazonaws.com/id/69F37B5270A7CC9A335D535CE2A58F90/.well-known/openid-configuration
+
+
+
+
+
+
+

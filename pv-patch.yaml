@@ -1,0 +1,7 @@
+metadata:
+  labels:
+    app.kubernetes.io/component: jenkins-controller
+    app.kubernetes.io/instance: myjenkins
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jenkins
+    helm.sh/chart: jenkins-4.4.0
