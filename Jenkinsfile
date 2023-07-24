@@ -45,13 +45,15 @@ pipeline {
         }
       }
     }
-    stage("Credentials Setup") {
+    stage('Credentials Setup') {
             steps {
-                container("docker") {
-                    withCredentials([file(credentialsId: "awscredentials", variable: 'AWS_SHARED_CREDENTIALS_FILE')]) { 
-                        sh(script: "mkdir -p /root/.aws")
-                        sh(script: "cp $AWS_SHARED_CREDENTIALS_FILE /root/.aws")
-                        sh(script: "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com")
+                container('docker') {
+                    withCredentials([file(credentialsId: "awscredentials", variable: 'AWS_SHARED_CREDENTIALS_FILE')]) {
+                        sh '''
+                            mkdir -p /root/.aws
+                            cp $AWS_SHARED_CREDENTIALS_FILE /root/.aws
+                            $(aws ecr get-login --no-include-email --region ap-south-1)
+                        '''
                     }
                 }
             }
