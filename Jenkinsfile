@@ -44,7 +44,7 @@ pipeline {
         }
       }
     }
-   /* stage("Credentials Setup") {
+    stage("Credentials Setup") {
             steps {
                 container("docker") {
                     withCredentials([file(credentialsId: "awscredentials", variable: 'AWS_SHARED_CREDENTIALS_FILE')]) { 
@@ -91,4 +91,4 @@ pipeline {
       }
     }
   }
-}.
+}
