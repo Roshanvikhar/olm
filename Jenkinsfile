@@ -1,6 +1,7 @@
 pipeline {
   environment {
-    dockerImagefaith360 = "449166544600.dkr.ecr.ap-south-1.amazonaws.com/demo-app"
+    dockerImagefaith360 = "449166544600.dkr.ecr.us-east-1.amazonaws.com/demo-app"
+     AWS_SHARED_CREDENTIALS_FILE = credentials('awscredentials')
     workdir =  "demo-app/deployment"
     def imageTag = sh(script: "echo `date +%y%m%d%H%M%S`", returnStdout: true).trim()
   }
@@ -50,7 +51,7 @@ pipeline {
                     withCredentials([file(credentialsId: "awscredentials", variable: 'AWS_SHARED_CREDENTIALS_FILE')]) { 
                         sh(script: "mkdir -p /root/.aws")
                         sh(script: "cp $AWS_SHARED_CREDENTIALS_FILE /root/.aws")
-                        sh(script: "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 287207390676.dkr.ecr.ap-south-1.amazonaws.com")
+                        sh(script: "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com")
                     }
                 }
             }
