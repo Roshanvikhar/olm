@@ -2,7 +2,7 @@ pipeline {
   environment {
     dockerImagefaith360 = "449166544600.dkr.ecr.us-east-1.amazonaws.com/demo-app"
      AWS_SHARED_CREDENTIALS_FILE = credentials('awscredentials')
-    workdir =  "demo-app/deployment"
+    workdir =  "demo-app/"
     def imageTag = sh(script: "echo `date +%y%m%d%H%M%S`", returnStdout: true).trim()
   }
   agent {
