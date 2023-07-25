@@ -87,7 +87,7 @@ pipeline {
         container('docker') {
           sh "sed -i -e 's#dockerImage#${dockerImagefaith360}#' ${workdir}/faith360-uat/deployment.yaml" 
           sh "sed -i -e 's#imageTag#${imageTag}#' ${workdir}/faith360-uat/deployment.yaml"
-          sh 'kubectl apply -k ${workdir}/faith360-uat'
+          sh 'kubectl apply -k ${workdir}/faith360-uatt'
         }
       }
     }
