@@ -31,12 +31,4 @@ spec:
         ports:
         - containerPort: 80
           name: announcement
-        volumeMounts:
-        - name: ca-pemstore
-          mountPath: /etc/ssl/certs/rds-combined-ca-bundle.pem
-          subPath: rds-combined-ca-bundle.pem
-      volumes:
-      - name: ca-pemstore
-        configMap:
-          name: ca-pemstore
 
