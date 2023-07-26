@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    dockerImagefaith360 = "449166544600.dkr.ecr.us-east-1.amazonaws.com/demo-app"
+    dockerImage = "449166544600.dkr.ecr.us-east-1.amazonaws.com/demo-app"
      AWS_SHARED_CREDENTIALS_FILE = credentials('awscredentials')
     workdir =  "demo-app/"
     def imageTag = sh(script: "echo `date +%y%m%d%H%M%S`", returnStdout: true).trim()
@@ -52,7 +52,7 @@ pipeline {
                         sh(script: "mkdir -p /root/.aws")
                         sh(script: "cp $AWS_SHARED_CREDENTIALS_FILE /root/.aws")
                       //sh(script: "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com")
-                      sh 'docker build -t $dockerImagefaith360:$imageTag $workdir'
+                      sh 'docker build -t $dockerImage:$imageTag $workdir'
                     }
                 }
             }
@@ -71,24 +71,24 @@ pipeline {
     steps {
         container('docker') {
           sh 'ls -l && pwd'
-          echo "Docker image and tag :: ${dockerImagefaith360}:${imageTag}"
-          sh 'cd ${workdir}; pwd; docker version && DOCKER_BUILDKIT=1 docker build -f Dockerfile -t ${dockerImagefaith360}:${imageTag} .'
+          echo "Docker image and tag :: ${dockerImage}:${imageTag}"
+          sh 'cd ${workdir}; pwd; docker version && DOCKER_BUILDKIT=1 docker build -f Dockerfile -t ${dockerImage}:${imageTag} .'
         }
       }
     }
     stage('Push'){
     steps {
         container('docker') {
-          sh 'docker push ${dockerImagefaith360}:${imageTag}'
+          sh 'docker push ${dockerImage}:${imageTag}'
         }
       }
     }
     stage('Deploy'){
     steps {
         container('docker') {
-          sh "sed -i -e 's#dockerImage#${dockerImagefaith360}#' ${workdir}/faith360-uat/deployment.yaml" 
-          sh "sed -i -e 's#imageTag#${imageTag}#' ${workdir}/faith360-uat/deployment.yaml"
-          sh 'kubectl apply -k ${workdir}/faith360-uatt'
+          sh "sed -i -e 's#dockerImage#${dockerImage}#' ${workdir}/deployment/deployment.yaml" 
+          sh "sed -i -e 's#imageTag#${imageTag}#' ${workdir}/deployment/deployment.yaml"
+          sh 'kubectl apply -k ${workdir}/deployment'
         }
       }
     }
