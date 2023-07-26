@@ -1,11 +1,9 @@
-FROM python:3.9-slim
+FROM python:3.9-alpine
 
 WORKDIR /app
 
 COPY app.py .
 
-RUN pip install flask
-
-RUN pip install --upgrade pip
+RUN pip install --no-cache-dir flask
 
 CMD ["python", "app.py"]
