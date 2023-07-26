@@ -68,7 +68,7 @@ pipeline {
         }
     }
     stage('Build'){
-    steps {
+    steps {       
         container('docker') {
           sh 'ls -l && pwd'
           echo "Docker image and tag :: ${dockerImage}:${imageTag}"
