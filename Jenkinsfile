@@ -11,7 +11,7 @@ pipeline {
         apiVersion: v1
         kind: Pod
         spec:
-          serviceAccountName: default
+          serviceAccountName: jenkins-admin
           accessModes:
           - ReadWriteMany
           volumes:
@@ -24,6 +24,16 @@ pipeline {
             - sleep
             args:
             - 99d
+            volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run
+          - name: docker-daemon
+            image: docker:19.03.1-dind
+            securityContext:
+              privileged: true
+            volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run
        '''
     }
   }
