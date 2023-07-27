@@ -2,20 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: announcement
-  name: announcement
+    app: demo-app
+  name: demo-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: announcement
+      app: demo-app
   template:
     metadata:
       labels:
-        app: announcement
+        app: demo-app
     spec:
       containers:
-      - name: announcement
+      - name: demo-app
         image: dockerImage:imageTag
         imagePullPolicy: Always
         resources:
@@ -30,5 +30,5 @@ spec:
           value: "uat"
         ports:
         - containerPort: 80
-          name: announcement
+          name: demo-app
 

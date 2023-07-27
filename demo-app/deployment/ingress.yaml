@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: announcement
+  name: demo-app
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -13,7 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
     nginx.ingress.kubernetes.io/cors-allow-headers: "enctype,Authorization,Content-Type,LanguageKey,Platform,CorrelationId"
 spec:
-#  ingressClassName: nginx
+  #  ingressClassName: nginx
   rules:
   - host: uat.faith360.co.in
     http:
@@ -22,6 +22,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: announcement
+            name: demo-app
             port:
               number: 80
