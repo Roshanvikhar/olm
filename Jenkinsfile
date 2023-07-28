@@ -52,34 +52,17 @@ pipeline {
         stage('Credentials Setup') {
             steps {
                 container("docker") {
-                    // Pass AWS access key and secret key directly to aws ecr command
-                    sh(script: "aws ecr get-login-password --region ap-south-1 --aws-access-key-id ${params.AWS_ACCESS_KEY_ID} --aws-secret-access-key ${params.AWS_SECRET_ACCESS_KEY} | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com")
+                    // Get the ECR login password
+                    def ecrLoginPassword = sh(script: "aws ecr get-login-password --region ap-south-1", returnStdout: true).trim()
+                    // Use the password as input to docker login
+                    sh "echo ${ecrLoginPassword} | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
                     // The rest of the pipeline steps
                     sh "docker build -t $dockerImage:$imageTag $workdir"
                 }
             }
         }
 
-        stage('Kube Config') {
-            steps {
-                container("docker") {
-                    withCredentials([file(credentialsId: "kubeconfig", variable: 'KUBECONFIG')]) { 
-                        sh "mkdir -p /root/.kube"
-                        sh "cp $KUBECONFIG /root/.kube"
-                    }
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                container('docker') {
-                    sh 'ls -l && pwd'
-                    echo "Docker image and tag :: ${dockerImage}:${imageTag}"
-                    sh "cd ${workdir}; pwd; docker version && DOCKER_BUILDKIT=1 docker build -f Dockerfile -t ${dockerImage}:${imageTag} ."
-                }
-            }
-        }
+        // Add more stages for your pipeline as needed
 
         stage('Push') {
             steps {
