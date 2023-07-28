@@ -53,7 +53,7 @@ pipeline {
             steps {
                 container("docker") {
                     // Get the ECR login password
-                    def ecrLoginPassword = sh(script: "aws ecr get-login-password --region ap-south-1", returnStdout: true).trim()
+                    sh ecrLoginPassword = sh(script: "aws ecr get-login-password --region ap-south-1", returnStdout: true).trim()
                     // Use the password as input to docker login
                     sh "echo ${ecrLoginPassword} | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
                     // The rest of the pipeline steps
