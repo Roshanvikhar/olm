@@ -73,8 +73,7 @@ pipeline {
        stage('Push Prayer') {
       steps {
         container('docker') {
-          sh "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
-          sh 'docker push ${dockerImage}:${imageTag}'
+          sh 'docker push 449166544600.dkr.ecr.ap-south-1.amazonaws.com/demo-app:latest'
                 }
             }
         }
