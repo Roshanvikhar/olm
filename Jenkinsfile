@@ -70,15 +70,10 @@ pipeline {
         }
     }
 }
-
-        stage('Push') {
-    steps {
+       stage('Push Prayer') {
+      steps {
         container('docker') {
-            // Set environment variables for AWS access key ID and secret access key
-            // Log in to ECR using environment variables
-            sh "docker login -u AWS -p \"$AWS_SECRET_ACCESS_KEY\" 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
-            // Push the Docker image to ECR
-            sh "docker push ${dockerImage}:${imageTag}"
+          sh 'docker push ${dockerImage}:${imageTag}'
                 }
             }
         }
