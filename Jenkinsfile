@@ -75,14 +75,8 @@ pipeline {
     steps {
         container('docker') {
             // Set environment variables for AWS access key ID and secret access key
-            environment {
-                AWS_ACCESS_KEY_ID = 'AKIAWRFDJR3MNY5Z347U'
-                AWS_SECRET_ACCESS_KEY = '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'
-            }
-
             // Log in to ECR using environment variables
             sh "docker login -u AWS -p \"$AWS_SECRET_ACCESS_KEY\" 449166544600.dkr.ecr.us-east-1.amazonaws.com"
-
             // Push the Docker image to ECR
             sh "docker push ${dockerImage}:${imageTag}"
                 }
