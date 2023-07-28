@@ -61,8 +61,15 @@ pipeline {
                 }
             }
         }
-
-        // Add more stages for your pipeline as needed
+        stage('Build Prayer') {
+                steps {
+                container('docker') {
+                   sh 'ls -l && pwd'
+                   echo "Docker image and tag :: ${dockerImage}:${imageTag}"
+                   sh 'cd ${workdir}; pwd; docker version && DOCKER_BUILDKIT=1 docker build -f Dockerfile -t ${dockerImage}:${imageTag} .'
+        }
+    }
+}
 
         stage('Push') {
             steps {
