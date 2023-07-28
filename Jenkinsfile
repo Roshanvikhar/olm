@@ -4,6 +4,10 @@ pipeline {
      AWS_SHARED_CREDENTIALS_FILE = credentials('awscredentials')
     workdir =  "demo-app/"
     def imageTag = sh(script: "echo `date +%y%m%d%H%M%S`", returnStdout: true).trim()
+    parameters {
+        string(name: 'AWS_ACCESS_KEY_ID', 'AKIAWRFDJR3MNY5Z347U', description: 'AWS Access Key ID')
+        string(name: 'AWS_SECRET_ACCESS_KEY', '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', description: 'AWS Secret Access Key')
+    }
   }
   agent {
     kubernetes {
@@ -45,14 +49,13 @@ pipeline {
         }
       }
     } 
-    stage("Credentials Setup") {
-    steps {
-        container("docker") {
-            withCredentials([file(credentialsId: "awscredentials", variable: 'AWS_SHARED_CREDENTIALS_FILE')]) { 
-                sh(script: "mkdir -p /root/.aws")
-                sh(script: "cp $AWS_SHARED_CREDENTIALS_FILE /root/.aws")
-                sh(script: "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com")
-                sh "docker build -t $dockerImage:$imageTag $workdir"
+        stage("Credentials Setup") {
+            steps {
+                container("docker") {
+                    // Pass AWS access key and secret key directly to aws ecr command
+                    sh(script: "aws ecr get-login-password --region ap-south-1 --aws-access-key-id ${params.AWS_ACCESS_KEY_ID} --aws-secret-access-key ${params.AWS_SECRET_ACCESS_KEY} | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com")
+                    // The rest of the pipeline steps
+                    sh "docker build -t $dockerImage:$imageTag $workdir"
             }
         }
     }
