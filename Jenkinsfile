@@ -44,12 +44,7 @@ pipeline {
           git branch: 'develop', credentialsId: 'jenkins-token', url: 'https://github.com/Roshanvikhar/olm.git'
         }
       }
-    }
-    stage("Install AWS CLI") {
-    steps {
-        sh 'apt-get update && apt-get install -y awscli' // Adjust this based on your Jenkins agent OS and package manager
-    }
-}
+    } 
     stage("Credentials Setup") {
     steps {
         container("docker") {
@@ -57,7 +52,7 @@ pipeline {
                 sh(script: "mkdir -p /root/.aws")
                 sh(script: "cp $AWS_SHARED_CREDENTIALS_FILE /root/.aws")
                 sh(script: "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com")
-                sh "docker build -t $dockerImage:$imageTag $workdir" // Changed to double quotes for variable interpolation
+                sh "docker build -t $dockerImage:$imageTag $workdir"
             }
         }
     }
