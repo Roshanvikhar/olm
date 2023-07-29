@@ -36,10 +36,6 @@ pipeline {
             '''
         }
     }
-    parameters {
-        string(defaultValue: 'AKIAWRFDJR3MNY5Z347U', description: 'AWS Access Key ID', name: 'AWS_ACCESS_KEY_ID')
-        string(defaultValue: 'NcfpQn59+vzLVV1ujhHQvxw51UFIUfZM2maVmMJ5', description: 'AWS Secret Access Key', name: 'AWS_SECRET_ACCESS_KEY')
-    }
     stages {
         stage('Git Checkout') {
             steps {
@@ -73,7 +69,7 @@ pipeline {
        stage('Push Prayer') {
       steps {
         container('docker') {
-          sh 'docker push 449166544600.dkr.ecr.ap-south-1.amazonaws.com/demo-app:latest'
+          sh 'docker push ${dockerImage}:${imageTag}'
                 }
             }
         }
