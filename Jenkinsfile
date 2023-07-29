@@ -45,18 +45,27 @@ pipeline {
             }
         }
 
-        stage('Credentials Setup') {
-            steps {
-                container("docker") {
-                    // Get the ECR login password
-                    sh ecrLoginPassword = sh(script: "aws ecr get-login-password --region ap-south-1", returnStdout: true).trim()
-                    // Use the password as input to docker login
-                    sh "echo ${ecrLoginPassword} | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
-                    // The rest of the pipeline steps
-                    sh "docker build -t $dockerImage:$imageTag $workdir"
-                }
+         stage('Credentials Setup') {
+      steps {
+        container('docker') {
+          withCredentials([file(credentialsId: 'awscredentials', variable: 'AWS_SHARED_CREDENTIALS_FILE')]) {
+            sh(script: 'mkdir -p /root/.aws')
+            sh(script: "cp $AWS_SHARED_CREDENTIALS_FILE /root/.aws")
+            sh(script: 'aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 535688970980.dkr.ecr.ap-south-1.amazonaws.com')
+          }
+        }
+      }
+    }
+     stage('Kube Config') {
+        steps {
+            container('docker') {
+          withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+            sh(script: 'mkdir -p /root/.kube')
+            sh(script: "cp $KUBECONFIG /root/.kube")
+          }
             }
         }
+    }
         stage('Build Prayer') {
                 steps {
                 container('docker') {
