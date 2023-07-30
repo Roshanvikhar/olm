@@ -39,7 +39,7 @@ pipeline {
     stage('Git Checkout') {
       steps {
         container('docker') {
-          git branch: 'develop', credentialsId: 'jenkins-token', url: ''https://github.com/Roshanvikhar/olm.git'
+          git branch: 'develop', credentialsId: 'jenkins-token', url: "https://github.com/Roshanvikhar/olm.git"
         }
       }
     }
