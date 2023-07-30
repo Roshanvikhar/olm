@@ -61,7 +61,7 @@ pipeline {
      stage('Docker Login') {
             steps {
                 script {
-                    sh "docker login -u AWS -p "$(aws ecr get-login-password)" ${env.dockerImage}"
+                  sh "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
                 }
             }
         }
