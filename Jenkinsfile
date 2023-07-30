@@ -46,48 +46,51 @@ pipeline {
                 }
             }
         }
-
-         stage('Credentials Setup') {
+        
+        stage('Credentials Setup') {
             steps {
-                script {
+                container('docker') {
                     sh 'mkdir -p ~/.aws'
                     sh 'echo "[default]" > ~/.aws/credentials'
-                    sh "echo 'aws_access_key_id = ${env.AWS_ACCESS_KEY_ID}' >> ~/.aws/credentials"
-                    sh "echo 'aws_secret_access_key = ${env.AWS_SECRET_ACCESS_KEY}' >> ~/.aws/credentials"
-          }
-        }
-      }
-    }
-     stage('Docker Login') {
-            steps {
-                script {
-                  sh "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
+                    sh "echo 'aws_access_key_id = ${AWS_ACCESS_KEY_ID}' >> ~/.aws/credentials"
+                    sh "echo 'aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}' >> ~/.aws/credentials"
                 }
             }
         }
-     stage('Kube Config') {
-        steps {
-            container('docker') {
-          withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-            sh(script: 'mkdir -p /root/.kube')
-            sh(script: "cp $KUBECONFIG /root/.kube")
-          }
+        
+        stage('Docker Login') {
+            steps {
+                container('docker') {
+                    sh "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
+                }
             }
         }
-    }
-        stage('Build Prayer') {
-                steps {
+        
+        stage('Kube Config') {
+            steps {
                 container('docker') {
-                   sh 'ls -l && pwd'
-                   echo "Docker image and tag :: ${dockerImage}:${imageTag}"
-                   sh 'cd ${workdir}; pwd; docker version && DOCKER_BUILDKIT=1 docker build -f Dockerfile -t ${dockerImage}:${imageTag} .'
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh(script: 'mkdir -p /root/.kube')
+                        sh(script: "cp $KUBECONFIG /root/.kube")
+                    }
+                }
+            }
         }
-    }
-}
-       stage('Push Prayer') {
-      steps {
-        container('docker') {
-          sh 'docker push ${dockerImage}:${imageTag}'
+        
+        stage('Build Prayer') {
+            steps {
+                container('docker') {
+                    sh 'ls -l && pwd'
+                    echo "Docker image and tag :: ${dockerImage}:${imageTag}"
+                    sh "cd ${workdir}; pwd; docker version && DOCKER_BUILDKIT=1 docker build -f Dockerfile -t ${dockerImage}:${imageTag} ."
+                }
+            }
+        }
+        
+        stage('Push Prayer') {
+            steps {
+                container('docker') {
+                    sh "docker push ${dockerImage}:${imageTag}"
                 }
             }
         }
@@ -102,4 +105,4 @@ pipeline {
             }
         }
     }
-
+}
