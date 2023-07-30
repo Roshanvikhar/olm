@@ -1,10 +1,8 @@
 pipeline {
+    agent any
     environment {
         dockerImage = "449166544600.dkr.ecr.us-east-1.amazonaws.com/demo-app"
         workdir = "demo-app/"
-        imageTag = sh(script: "date +%y%m%d%H%M%S", returnStdout: true).trim()
-        AWS_ACCESS_KEY_ID = credentials('awscredentials').AWS_ACCESS_KEY_ID
-        AWS_SECRET_ACCESS_KEY = credentials('awscredentials').AWS_SECRET_ACCESS_KEY
     }
     agent {
         kubernetes {
@@ -41,42 +39,40 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                container('docker') {
-                    git branch: 'develop', credentialsId: 'jenkins-token', url: 'https://github.com/Roshanvikhar/olm.git'
-                }
+                git branch: 'develop', credentialsId: 'jenkins-token', url: 'https://github.com/Roshanvikhar/olm.git'
             }
         }
-        
+
         stage('Credentials Setup') {
             steps {
-                container('docker') {
-                    sh 'mkdir -p ~/.aws'
-                    sh 'echo "[default]" > ~/.aws/credentials'
-                    sh "echo 'aws_access_key_id = ${AWS_ACCESS_KEY_ID}' >> ~/.aws/credentials"
-                    sh "echo 'aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}' >> ~/.aws/credentials"
-                }
-            }
-        }
-        
-        stage('Docker Login') {
-            steps {
-                container('docker') {
-                    sh "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
-                }
-            }
-        }
-        
-        stage('Kube Config') {
-            steps {
-                container('docker') {
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        sh(script: 'mkdir -p /root/.kube')
-                        sh(script: "cp $KUBECONFIG /root/.kube")
+                script {
+                    withCredentials([file(credentialsId: 'awscredentials', variable: 'AWS_CREDENTIALS')]) {
+                        sh 'mkdir -p ~/.aws'
+                        sh "cp ${AWS_CREDENTIALS} ~/.aws/credentials"
                     }
                 }
             }
         }
-        
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([file(credentialsId: 'awscredentials', variable: 'AWS_CREDENTIALS')]) {
+                    sh "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 449166544600.dkr.ecr.ap-south-1.amazonaws.com"
+                }
+            }
+        }
+
+        stage('Kube Config') {
+            steps {
+                script {
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh 'mkdir -p /root/.kube'
+                        sh "cp ${KUBECONFIG} /root/.kube"
+                    }
+                }
+            }
+        }
+
         stage('Build Prayer') {
             steps {
                 container('docker') {
@@ -86,7 +82,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Push Prayer') {
             steps {
                 container('docker') {
