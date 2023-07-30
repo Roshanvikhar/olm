@@ -3,6 +3,8 @@ pipeline {
         dockerImage = "449166544600.dkr.ecr.us-east-1.amazonaws.com/demo-app"
         workdir = "demo-app/"
         imageTag = sh(script: "date +%y%m%d%H%M%S", returnStdout: true).trim()
+        AWS_ACCESS_KEY_ID = credentials('awscredentials').AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY = credentials('awscredentials').AWS_SECRET_ACCESS_KEY
     }
     agent {
         kubernetes {
@@ -46,12 +48,12 @@ pipeline {
         }
 
          stage('Credentials Setup') {
-      steps {
-        container('docker') {
-          withCredentials([file(credentialsId: 'awscredentials', variable: 'AWS_SHARED_CREDENTIALS_FILE')]) {
-            sh(script: 'mkdir -p /root/.aws')
-            sh(script: "cp $AWS_SHARED_CREDENTIALS_FILE /root/.aws")
-            sh(script: 'aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 535688970980.dkr.ecr.ap-south-1.amazonaws.com')
+            steps {
+                script {
+                    sh 'mkdir -p ~/.aws'
+                    sh 'echo "[default]" > ~/.aws/credentials'
+                    sh "echo 'aws_access_key_id = ${env.AWS_ACCESS_KEY_ID}' >> ~/.aws/credentials"
+                    sh "echo 'aws_secret_access_key = ${env.AWS_SECRET_ACCESS_KEY}' >> ~/.aws/credentials"
           }
         }
       }
