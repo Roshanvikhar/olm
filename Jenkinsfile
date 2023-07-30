@@ -58,6 +58,13 @@ pipeline {
         }
       }
     }
+     stage('Docker Login') {
+            steps {
+                script {
+                    sh "docker login -u AWS -p \"$(aws ecr get-login-password)\" ${env.dockerImage}"
+                }
+            }
+        }
      stage('Kube Config') {
         steps {
             container('docker') {
