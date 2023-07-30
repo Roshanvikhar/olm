@@ -17,7 +17,7 @@ pipeline {
             emptyDir: {}
           containers:
           - name: docker
-            image: 535688970980.dkr.ecr.ap-south-1.amazonaws.com/jenkins-slave:1
+            image: public.ecr.aws/p1h2b7r2/jenkins-slave
             command:
             - sleep
             args:
