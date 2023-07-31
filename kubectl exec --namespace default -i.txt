@@ -25,7 +25,9 @@ aws eks update-kubeconfig --name Demo-Cluster --region ap-south-1
 
 kubectl config set-context Demo-Cluster-context --cluster=Demo-Cluster
 
+kubectl config use-context arn:aws:eks:ap-south-1:449166544600:cluster/Demo-Cluster --cluster=Demo-Cluster
 
+jenkins-password
 admin
 vaqKGgDpHSv8whnw8tNGVc
 
